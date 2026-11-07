@@ -1,0 +1,151 @@
+<!DOCTYPE html>
+<html lang="ar" dir="rtl">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover">
+<title>رحلة حرف ف</title>
+<style>
+:root{--bg:#eefbe9;--card:#fff;--ink:#1f3a22;--mut:#5b7d5e;--pri:#2f9e44;--ok:#1f9d57;--bad:#e5484d;--gold:#ffc83d;--line:#cdebc4;box-sizing:border-box;padding-top:env(safe-area-inset-top,0px);padding-bottom:env(safe-area-inset-bottom,0px)}
+@media (prefers-color-scheme:dark){:root:not([data-theme="light"]){color-scheme:dark;--bg:#122216;--card:#1d3a24;--ink:#eaffea;--mut:#a7d3ab;--line:#315c39}}
+:root[data-theme="dark"]{color-scheme:dark;--bg:#122216;--card:#1d3a24;--ink:#eaffea;--mut:#a7d3ab;--line:#315c39}
+*{box-sizing:border-box}html,body{margin:0}
+body{background:var(--bg);color:var(--ink);font-family:"Segoe UI",Tahoma,"Noto Naskh Arabic",Arial,sans-serif;min-height:100vh;-webkit-tap-highlight-color:transparent}
+header{display:flex;align-items:center;gap:8px;padding:10px 12px;background:var(--card);border-bottom:2px solid var(--line);position:sticky;top:0;z-index:5;flex-wrap:wrap}
+button{font:inherit;cursor:pointer;border:0;border-radius:14px;padding:10px 16px;background:var(--pri);color:#fff;font-weight:700;box-shadow:0 3px 0 rgba(0,0,0,.2)}
+button:active{transform:translateY(2px);box-shadow:none}button:disabled{cursor:default}
+button.ghost{background:var(--card);color:var(--ink);border:2px solid var(--line)}
+#st{margin-inline-start:auto;font-weight:700;font-size:14px}
+main{max-width:640px;margin:0 auto;padding:14px}
+h1,h2{margin:.3em 0;text-align:center}.sub{color:var(--mut);text-align:center;margin:0 0 10px}
+.card{background:var(--card);border:2px solid var(--line);border-radius:18px;padding:14px;text-align:center}
+.row{display:flex;gap:10px;justify-content:center;flex-wrap:wrap;margin:12px 0}
+.scene{border-radius:20px;padding:10px 8px 6px;margin:8px 0;color:#1a2a1a}
+.scene.dk{color:#fff}
+.scene h3{margin:0 0 4px;text-align:center;font-size:17px}
+.path{position:relative;height:86px}
+.stone{position:absolute;bottom:2px;font-size:30px;transform:translateX(50%);opacity:.85}
+.hero{position:absolute;bottom:20px;font-size:50px;transform:translateX(50%);transition:right .8s ease;line-height:1;z-index:2}
+.hero.jump{animation:jp .5s}@keyframes jp{40%{transform:translateX(50%) translateY(-26px)}}
+.doors{display:grid;gap:10px;margin:10px 0}
+.door{display:flex;flex-direction:column;gap:6px}
+.dr{background:var(--card);color:var(--ink);border:3px solid var(--line);box-shadow:none;padding:12px 4px;font-size:44px;line-height:1.1;transition:.3s}
+.dr b{display:block;font-size:clamp(22px,6vw,30px);margin-top:4px}
+.dr small{display:block;font-size:34px;min-height:38px}
+.dr.ok{border-color:var(--ok);background:#d8f5e3;color:#14532d}.dr.no{border-color:var(--bad);opacity:.55}
+.dr.glow{animation:gl .7s infinite}@keyframes gl{50%{outline:5px solid var(--gold);outline-offset:2px}}
+.sp{padding:6px;font-size:18px;box-shadow:none;background:var(--card);color:var(--ink);border:2px solid var(--line)}
+#msg{min-height:30px;text-align:center;font-size:20px;font-weight:800;margin:6px 0}.ok-t{color:var(--ok)}.bad-t{color:var(--bad)}
+#hn{min-height:26px;text-align:center;color:var(--pri);font-weight:800}
+.ai{background:var(--card);border:2px dashed var(--pri);border-radius:16px;padding:12px;line-height:1.7}
+.chip{display:inline-block;background:var(--card);border:2px solid var(--line);border-radius:20px;padding:4px 12px;font-size:14px;margin:2px}
+.prog{height:8px;background:var(--line);border-radius:8px;overflow:hidden}.prog>i{display:block;height:100%;background:var(--gold);transition:.3s}
+.big{font-size:44px;font-weight:800;text-align:center}.pic{font-size:72px;text-align:center}
+.pk{background:var(--card);color:var(--ink);border:3px solid var(--line);box-shadow:none;font-size:42px;padding:8px 14px}.pk.sel{border-color:var(--pri)}
+.shake{animation:sh .35s}@keyframes sh{25%{transform:translateX(-7px)}75%{transform:translateX(7px)}}
+#conf{position:fixed;inset:0;pointer-events:none;z-index:9;width:100vw;height:100vh}
+</style>
+</head>
+<body>
+<header>
+ <button class="ghost" id="home">🏠 الرئيسية</button>
+ <button class="ghost" id="snd">🔊</button>
+ <span id="st"></span>
+</header>
+<main id="main"></main>
+<canvas id="conf"></canvas>
+<script>
+const $=s=>document.querySelector(s),M=$('#main');
+const shuffle=a=>[...a].sort(()=>Math.random()-.5),ri=(a,b)=>a+Math.floor(Math.random()*(b-a+1)),sleep=ms=>new Promise(r=>setTimeout(r,ms));
+const F=[['🐘','فيل'],['🦋','فراشة'],['👗','فستان'],['🍓','فراولة'],['🌶️','فلفل'],['🐭','فأر'],['🍄','فطر'],['☕','فنجان'],['🪥','فرشاة'],['🐆','فهد'],['👄','فم'],['🐴','فرس'],['🐥','فرخ'],['🫘','فول'],['🥧','فطيرة'],['🏮','فانوس'],['🍇','فاكهة']];
+const EZ=[['🌙','قمر'],['🏠','بيت'],['🐪','جمل'],['⭐','نجمة'],['🍎','تفاحة'],['🐟','سمكة'],['🌳','شجرة'],['🚗','سيارة'],['🍌','موزة'],['📖','كتاب'],['🐔','دجاجة'],['🐶','كلب']];
+const SIM=[['🐱','قطة'],['🐒','قرد'],['✏️','قلم'],['⛵','قارب'],['☁️','غيمة'],['🐦‍⬛','غراب'],['🦌','غزال'],['🐓','قنفذ']];
+const TRK=[['🔑','مفتاح'],['🐑','خروف'],['🧶','صوف'],['🪟','نافذة'],['🚢','سفينة'],['🦒','زرافة'],['🐦','عصفور']];
+const T=[{n:'غابة الأشجار',bg:'linear-gradient(#bff0c0,#6fcf7a)',st:'🪵',goal:'🏡'},{n:'جزيرة البحر',bg:'linear-gradient(#bfe8ff,#4aa8e8)',st:'🪨',goal:'🏝️'},{n:'صحراء الذهب',bg:'linear-gradient(#ffe8b5,#f0b45a)',st:'🌵',goal:'🏜️'},{n:'مدينة الفضاء',bg:'linear-gradient(#2b2f77,#10123a)',st:'⭐',goal:'🚀',dk:1},{n:'مدينة الحلوى',bg:'linear-gradient(#ffd6ec,#ff9ccf)',st:'🍬',goal:'🏰'},{n:'جبل الثلج',bg:'linear-gradient(#eaf6ff,#a9c9e8)',st:'🧊',goal:'⛺'}];
+const HEROES=['🦊','🐰','🐻','🐼','🐸','🐱'];
+const S={lv:0,weak:{},mute:false,pts:0,stars:0,j:0,hero:'🦊',theme:-1,note:'',gen:0};
+let AC=null;
+function tone(f,t=.15,d=0,ty='sine',v=.2,f2){if(S.mute)return;try{AC=AC||new(window.AudioContext||window.webkitAudioContext)();const o=AC.createOscillator(),g=AC.createGain(),s=AC.currentTime+d;o.type=ty;o.frequency.setValueAtTime(f,s);if(f2)o.frequency.exponentialRampToValueAtTime(f2,s+t);g.gain.setValueAtTime(v,s);g.gain.exponentialRampToValueAtTime(.001,s+t);o.connect(g);g.connect(AC.destination);o.start(s);o.stop(s+t)}catch(e){}}
+const sfx={tick(){tone(600,.06,0,'square',.07)},door(){tone(110,.35,0,'sawtooth',.12,220);tone(660,.2,.3,'triangle',.12)},step(){tone(420,.07,0,'triangle',.15);tone(520,.07,.12,'triangle',.15)},ok(){[523,659,784,1047].forEach((f,i)=>tone(f,.18,i*.09,'triangle'))},lock(){tone(180,.25,0,'sawtooth',.12);tone(140,.25,.1,'sawtooth',.1)},hint(){tone(880,.12,0,'sine',.12);tone(1100,.18,.12,'sine',.12)},pt(){[784,988,1319].forEach((f,i)=>tone(f,.2,i*.08,'square',.1))},win(){[523,659,784,1047,784,1047,1319,1568].forEach((f,i)=>tone(f,.22,i*.11,'triangle'))},up(){[392,523,659,784,1047].forEach((f,i)=>tone(f,.15,i*.07,'triangle'))}};
+function say(t){if(S.mute||!window.speechSynthesis)return;try{speechSynthesis.cancel();const u=new SpeechSynthesisUtterance(t);u.lang='ar-SA';u.rate=.85;speechSynthesis.speak(u)}catch(e){}}
+function hud(){$('#st').textContent='🌟 '+S.pts+' • ⭐ '+S.stars;$('#snd').textContent=S.mute?'🔇':'🔊'}
+function msg(t,g){const m=$('#msg');if(m){m.textContent=t;m.className=g?'ok-t':'bad-t'}}
+function conf(){const c=$('#conf'),x=c.getContext('2d');c.width=innerWidth;c.height=innerHeight;const P=Array.from({length:80},()=>({x:Math.random()*c.width,y:-20-Math.random()*200,v:2+Math.random()*4,e:['🦋','🌸','⭐','🚪'][Math.floor(Math.random()*4)],s:18+Math.random()*18}));let n=0;(function f(){x.clearRect(0,0,c.width,c.height);P.forEach(p=>{p.y+=p.v;x.font=p.s+'px serif';x.fillText(p.e,p.x,p.y)});if(++n<140)requestAnimationFrame(f);else x.clearRect(0,0,c.width,c.height)})()}
+const hl=w=>w.replace(/ف/g,'<span style="color:#e5484d">ف</span>');
+const DOORS=[2,3,4],STEPS=[5,6,6];
+const chip=()=>'<span class="chip">🚪 الأبواب: '+DOORS[S.lv]+'</span><span class="chip">🛤️ المستوى: '+(S.lv+1)+'</span>';
+
+/* ---- AI journey generator ---- */
+const wk=w=>S.weak[w[1]]||0;
+function mkStep(used){
+ const cp=shuffle(F.filter(x=>!used.has(x[1]))).sort((a,b)=>wk(b)-wk(a)+(Math.random()-.5)*.8)[0]||shuffle(F)[0];
+ used.add(cp[1]);const n=DOORS[S.lv],pick=(a,k)=>shuffle(a).filter(x=>!used.has(x[1])).slice(0,k);
+ let ds=[];
+ if(S.lv==0)ds=pick(EZ,n-1);
+ else if(S.lv==1)ds=[...pick(SIM,1),...pick(EZ,n-2)];
+ else ds=[...pick(TRK,1),...pick(SIM,1),...pick(EZ,n-3)];
+ ds=ds.slice(0,n-1);ds.forEach(x=>used.add(x[1]));
+ return{c:cp,o:shuffle([cp,...ds])};
+}
+function decide(M,L){
+ const old=S.lv;let why;
+ if(M<=1&&S.lv<2){S.lv++;why='رحلة رائعة! رفعت المستوى: أبواب أكثر وكلمات أصعب (حروف متشابهة وحرف ف داخل الكلمة).';setTimeout(sfx.up,900)}
+ else if(M>=L&&S.lv>0){S.lv--;why='كانت الرحلة صعبة، فأعود إلى أبواب أقل وكلمات أوضح لنتدرّب براحة.'}
+ else why=M<=1?'أنتم في أعلى مستوى! سأغيّر الكلمات والمسار في كل رحلة.':'سأبقي المستوى نفسه لتثبّتوا ما تعلّمتم، وبكلمات ومسار جديدين.';
+ const w=Object.keys(S.weak).filter(k=>S.weak[k]>=1);if(w.length)why+=' وسأكرّر قريبًا: '+w.slice(0,3).join('، ')+'.';
+ S.note=why;
+}
+
+/* ---- screens ---- */
+function home(){S.gen++;
+ M.innerHTML='<h1>🗺️ رحلة حرف ف</h1><p class="sub">ساعد صديقك على عبور المسار! اختر الباب الذي عليه كلمة تبدأ بحرف «ف».</p>'+
+ '<div class="card"><b>اختر صديقك</b><div class="row" id="hr">'+HEROES.map(h=>'<button class="pk'+(h==S.hero?' sel':'')+'" data-h="'+h+'">'+h+'</button>').join('')+'</div>'+chip()+'</div><br>'+
+ '<div class="ai"><b>🤖 المساعد الذكي</b><br>يبدّل الكلمات والمسار في كل رحلة (غابة، بحر، صحراء، فضاء…) لتبقى اللعبة جديدة.'+(S.note?'<br>📝 '+S.note:'')+'</div><div class="row"><button id="go" style="font-size:22px">▶ ابدأ الرحلة '+(S.j+1)+'</button></div>';
+ $('#hr').onclick=e=>{const h=e.target.dataset.h;if(h){S.hero=h;sfx.tick();home()}};
+ $('#go').onclick=()=>{sfx.door();journey()};hud();
+}
+async function journey(){
+ const gen=++S.gen;let ti;do{ti=ri(0,T.length-1)}while(ti==S.theme);S.theme=ti;
+ const th=T[ti],L=STEPS[S.lv]+ri(0,1),used=new Set(),pos=i=>4+i*(86/L);
+ let k=0,M_=0,w=0;
+ const stones=Array.from({length:L},(_,i)=>'<span class="stone" style="right:'+pos(i)+'%">'+th.st+'</span>').join('')+'<span class="stone" style="right:'+pos(L)+'%;font-size:40px">'+th.goal+'</span>';
+ M.innerHTML='<div class="prog"><i id="pg" style="width:0"></i></div><div class="scene'+(th.dk?' dk':'')+'" style="background:'+th.bg+'"><h3>'+th.n+' • '+L+' أبواب في الطريق</h3><div class="path">'+stones+'<span class="hero" id="hero" style="right:'+pos(0)+'%">'+S.hero+'</span></div></div><div style="text-align:center">'+chip()+'</div><div id="msg"></div><div id="hn"></div><div class="doors" id="dr"></div>';
+ say('رحلة جديدة إلى '+th.n);
+ function step(){
+  const st=mkStep(used),n=st.o.length;w=0;
+  $('#msg').textContent='';$('#hn').textContent='';
+  const dr=$('#dr');dr.style.gridTemplateColumns='repeat('+n+',1fr)';
+  dr.innerHTML=st.o.map((o,i)=>'<div class="door"><button class="dr" data-i="'+i+'" aria-label="باب">🚪<b>'+o[1]+'</b><small></small></button><button class="sp" data-s="'+i+'" aria-label="استمع">🔈</button></div>').join('');
+  msg('أي باب يحمل كلمة تبدأ بحرف ف؟',1);
+  const ds=[...dr.querySelectorAll('.dr')],sp=[...dr.querySelectorAll('.sp')],cb=ds[st.o.indexOf(st.c)];
+  sp.forEach(b=>b.onclick=()=>{sfx.tick();say(st.o[b.dataset.s][1])});
+  ds.forEach(b=>b.onclick=async()=>{const o=st.o[b.dataset.i];say(o[1]);
+   if(o===st.c){ds.forEach(x=>x.disabled=true);b.classList.add('ok');b.firstChild.textContent='✨';sfx.door();S.pts++;
+    b.querySelector('b').innerHTML=hl(o[1]);b.querySelector('small').textContent=o[0];
+    if(S.weak[o[1]])S.weak[o[1]]=Math.max(0,S.weak[o[1]]-.5);
+    msg('أحسنت! «'+o[1]+'» تبدأ بحرف ف 🌟',1);hud();$('#hn').textContent='';
+    await sleep(900);if(gen!=S.gen)return;
+    k++;const h=$('#hero');h.classList.add('jump');h.style.right=pos(k)+'%';sfx.step();$('#pg').style.width=k/L*100+'%';
+    await sleep(1000);if(gen!=S.gen)return;h.classList.remove('jump');
+    if(k>=L)arrive();else step()}
+   else{w++;M_++;b.classList.add('no','shake');b.disabled=true;b.firstChild.textContent='🔒';b.querySelector('small').textContent=o[0];sfx.lock();setTimeout(()=>b.classList.remove('shake'),400);
+    S.weak[st.c[1]]=(S.weak[st.c[1]]||0)+.3;
+    let tx;
+    if(w==1){tx='«'+o[1]+'» تبدأ بحرف «'+o[1][0]+'» وليس ف'+(o[1].includes('ف')?' (ف موجودة في وسطها أو آخرها فقط)':'')}
+    else if(w==2){tx='حرف ف عليه نقطة واحدة فوقه: ف'}
+    else{tx='ابحث عن الباب المضيء ✨';cb.classList.add('glow')}
+    msg('الباب مغلق، جرّب بابًا آخر',0);sfx.hint();$('#hn').textContent='💡 '+tx;say(tx)}});
+ }
+ function arrive(){
+  const st=M_<=1?3:M_<=3?2:1;S.stars+=st;S.j++;decide(M_,L);hud();sfx.win();conf();
+  setTimeout(()=>{
+   M.innerHTML='<h2>🎉 وصلنا!</h2><div class="pic">'+S.hero+th.goal+'</div><div class="big">'+'⭐'.repeat(st)+'</div><div class="card" style="font-size:19px;line-height:1.9">'+th.n+'<br>أخطاء الرحلة: '+M_+'</div><br><div class="ai"><b>🤖 قرار المساعد الذكي</b><br>'+S.note+'</div><div class="row"><button id="nx" style="font-size:20px">رحلة جديدة ◀</button><button class="ghost" id="hm">الرئيسية</button></div>';
+   $('#nx').onclick=()=>{sfx.door();journey()};$('#hm').onclick=home},300);
+ }
+ hud();step();
+}
+$('#home').onclick=()=>{sfx.tick();home()};
+$('#snd').onclick=()=>{S.mute=!S.mute;if(!S.mute)sfx.tick();hud()};
+home();
+</script>
+</body>
+</html>
